@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto da Arte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos gerais */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            overflow-y: auto;
+            transition: background-color 2s ease;
+        }
+
+       .simulated-status-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 36px;
+    background: #f3f8ff;
+    z-index: 1000;
+}
+
+header {
+    margin-top: 36px;
+    background: #f3f8ff;
+    color: #f3f8ff;
+    padding: 20px;
+    text-align: center;
+    font-family: 'Dancing Script', cursive;
+    position: relative;
+}
+
+        header h1 {
+            font-weight: bold;
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto 0px;
+        }
+
+        .theme-toggle-icon {
+            position: absolute;
+            left: 10px;
+            bottom: -40px;
+            cursor: pointer;
+            z-index: 1001;
+            width: 30px;
+            height: 30px;
+        }
+
+        main {
+            padding: 20px;
+            margin-top: 100px; /* Adiciona espaço para a barra de status */
+        }
+
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .product {
+            border: 2px solid #00A1E0;
+            border-radius: 10px;
+            margin: 20px;
+            padding: 15px;
+            text-align: center;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: calc(100% - 40px);
+            max-width: 300px;
+            transition: background-color 2s ease;
+            flex: 0 0 auto;
+        }
+
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .product .descricao-link {
+            color: #007BFF;
+            cursor: pointer;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .product p.preco {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .product button {
+            background-color: #002147;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .product button:hover {
+            background-color: #00A1E0;
+        }
+
+        .carousel-container {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            will-change: transform;
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .carousel-nav button {
+            background-color: #002147;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            padding: 20px;
+            border: none;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content h1, 
+        .modal-content p {
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+
+        .modal-content button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background: #005bb5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        footer {
+            background: #002147;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .product {
+                margin: 10px;
+                width: calc(100% - 20px);
+                flex: 1 1 calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="simulated-status-bar"></div>
+
+    <header>
+        <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/20241120_202244_0000.jpg" alt="Logotipo" class="logo">
+        <h1>Ponto da Arte</h1>
+        <img src="https://cdn-icons-png.flaticon.com/128/6338/6338536.png" alt="Toggle Theme" class="theme-toggle-icon" onclick="toggleTheme()">
+    </header>
+
+    <main>
+        <!-- Carrossel de Bolsas -->
+        <section>
+            <h2>Bolsas</h2>
+            <div class="carousel-container">
+                <div class="carousel" id="carousel-bolsas">
+                    <div class="product">
+                        <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/bolsa%20compat%C3%ADvel%20para%20sair%20para%20praia%20r%24%2015%20cupom%20de%20desconto%2010%25%20off%20(1).jpg" alt="Bolsa Praia">
+                        <h2>Bolsa de Praia</h2>
+                        <span class="descricao-link" onclick="mostrarDescricao('desc6')">Ver Descrição</span>
+                        <p id="desc6" style="display:none;">Bolsa ideal para suas saídas à praia, com cupom de desconto de 10%!</p>
+                        <p class="preco">R$ 15,00</p>
+                        <button class="botao" onclick="adicionarAoCarrinho('Bolsa de Praia', 15.00)">Adicionar ao Carrinho</button>
+                        <button class="botao" onclick="mostrarModalDesconto('Bolsa de Praia')">Comprar</button>
+                    </div>
+                    <div class="product">
+                        <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/coloque%20o%20nome%20promo%C3%A7%C3%A3o%20bolsa%20croch%C3%AA%2010%20Reias.jpg" alt="Bolsa Crochê Promoção">
+                        <h2>Bolsa Crochê</h2>
+                        <span class="descricao-link" onclick="mostrarDescricao('desc7')">Ver Descrição</span>
+                        <p id="desc7" style="display:none;">Aproveite a promoção desta linda bolsa de crochê por apenas R$ 10,00!</p>
+                        <p class="preco">R$ 10,00</p>
+                        <button class="botao" onclick="adicionarAoCarrinho('Bolsa Crochê', 10.00)">Adicionar ao Carrinho</button>
+                        <button class="botao" onclick="mostrarModalDesconto('Bolsa Crochê')">Comprar</button>
+                    </div>
+                  
+        </section>
+
+        <!-- Carrossel de Roupas de Praia -->
+        <section>
+            <h2>Roupas de Praia</h2>
+            <div class="carousel-container">
+                <div class="carousel" id="carousel-roupas">
+                    <div class="product">
+                        <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/roupa%20de%20praia%20croch%C3%AA%20pre%C3%A7o%20imperd%C3%ADvel%20r%24%2010.jpg" alt="Roupa de Praia Crochê">
+                        <h2>Roupa de Praia Crochê</h2>
+                        <span class="descricao-link" onclick="mostrarDescricao('desc9')">Ver Descrição</span>
+                        <p id="desc9" style="display:none;">Roupa de praia em crochê com preço imperdível de R$ 10,00!</p>
+                        <p class="preco">R$ 10,00</p>
+                        <button class="botao" onclick="adicionarAoCarrinho('Roupa de Praia Crochê', 10.00)">Adicionar ao Carrinho</button>
+                        <button class="botao" onclick="mostrarModalDesconto('Roupa de Praia Crochê')">Comprar</button>
+                    </div>
+                    <div class="product">
+                        <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/roupa%20de%20praia%20pre%C3%A7o%20imperd%C3%ADvel%20r%24%2010.jpg" alt="Roupa de Praia">
+                        <h2>Roupa de Praia</h2>
+                        <span class="descricao-link" onclick="mostrarDescricao('desc10')">Ver Descrição</span>
+                        <p id="desc10" style="display:none;">Aproveite o preço imperdível de R$ 10,00 nesta roupa de praia!</p>
+                        <p class="preco">R$ 10,00</p>
+                        <button class="botao" onclick="adicionarAoCarrinho('Roupa de Praia', 10.00)">Adicionar ao Carrinho</button>
+                        <button class="botao" onclick="mostrarModalDesconto('Roupa de Praia')">Comprar</button>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button onclick="prevSlide('carousel-roupas')">&lt;</button>
+                    <button onclick="nextSlide('carousel-roupas')">&gt;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Carrossel de Capas de Liquidificador -->
+        <section>
+            <h2>Capas de Liquidificador</h2>
+            <div class="carousel-container">
+                <div class="carousel" id="carousel-capaliquidificador">
+                    <div class="product">
+                        <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/capa%20para%20liquidificador%20vermelha%20promo%C3%A7%C3%A3o%20imperd%C3%ADvel%20r%24%205.webp" alt="Capa para Liquidificador Vermelha">
+                        <h2>Capa Vermelha</h2>
+                        <span class="descricao-link" onclick="mostrarDescricao('desc11')">Ver Descrição</span>
+                        <p id="desc11" style="display:none;">Capa para liquidificador na cor vermelha, em promoção por R$ 5,00!</p>
+                        <p class="preco">R$ 5,00</p>
+                        <button class="botao" onclick="adicionarAoCarrinho('Capa Vermelha', 5.00)">Adicionar ao Carrinho</button>
+                        <button class="botao" onclick="mostrarModalDesconto('Capa Vermelha')">Comprar</button>
+                    </div>
+                    <div class="product">
+                        <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/capa%20para%20liquidificador%20%24%2015%20cupom%20de%20desconto%2010%25%20off%20(2).jpg" alt="Capa para Liquidificador">
+                        <h2>Capa para Liquidificador</h2>
+                        <span class="descricao-link" onclick="mostrarDescricao('desc12')">Ver Descrição</span>
+                        <p id="desc12" style="display:none;">Capa com design especial, aproveite o cupom de 10% de desconto!</p>
+                        <p class="preco">R$ 15,00</p>
+                        <button class="botao" onclick="adicionarAoCarrinho('Capa para Liquidificador', 15.00)">Adicionar ao Carrinho</button>
+                        <button class="botao" onclick="mostrarModalDesconto('Capa para Liquidificador')">Comprar</button>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button onclick="prevSlide('carousel-capaliquidificador')">&lt;</button>
+                    <button onclick="nextSlide('carousel-capaliquidificador')">&gt;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Produtos de Linha -->
+        <section class="products" id="produtos-linhas">
+            <h2>Linhas</h2>
+            <div class="product">
+                <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/Linha%20Anne%2016%2C99%20RS.jpg" alt="Linha Anne">
+                <h2>Linha Anne</h2>
+                <span class="descricao-link" onclick="mostrarDescricao('desc1')">Ver Descrição</span>
+                <p id="desc1" style="display:none;">Linha Anne é resistente e de ótima qualidade, perfeita para seus projetos.</p>
+                <p class="preco">R$ 16,99</p>
+                <button class="botao" onclick="adicionarAoCarrinho('Linha Anne', 16.99)">Adicionar ao Carrinho</button>
+                <button class="botao" onclick="mostrarEndereco('Linha Anne')">Comprar</button>
+            </div>
+            <div class="product">
+                <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/Linha%20Charme%2016%2C99%20RS.jpg" alt="Linha Charme">
+                <h2>Linha Charme</h2>
+                <span class="descricao-link" onclick="mostrarDescricao('desc2')">Ver Descrição</span>
+                <p id="desc2" style="display:none;">Linha Charme oferece resistência e qualidade excepcional para suas criações.</p>
+                <p class="preco">R$ 16,99</p>
+                <button class="botao" onclick="adicionarAoCarrinho('Linha Charme', 16.99)">Adicionar ao Carrinho</button>
+                <button class="botao" onclick="mostrarEndereco('Linha Charme')">Comprar</button>
+            </div>
+            <div class="product">
+                <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/Linha%20Duna%2014%2C99%20RS.jpg" alt="Linha Duna">
+                <h2>Linha Duna</h2>
+                <span class="descricao-link" onclick="mostrarDescricao('desc3')">Ver Descrição</span>
+                <p id="desc3" style="display:none;">Linha Duna é conhecida por sua resistência e qualidade superior.</p>
+                <p class="preco">R$ 14,99</p>
+                <button class="botao" onclick="adicionarAoCarrinho('Linha Duna', 14.99)">Adicionar ao Carrinho</button>
+                <button class="botao" onclick="mostrarEndereco('Linha Duna')">Comprar</button>
+            </div>
+            <div class="product">
+                <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/Linha%20Harmony%2015%20RS.png" alt="Linha Harmony">
+                <h2>Linha Harmony</h2>
+                <span class="descricao-link" onclick="mostrarDescricao('desc4')">Ver Descrição</span>
+                <p id="desc4" style="display:none;">Linha Harmony combina resistência com qualidade superior, ideal para qualquer projeto.</p>
+                <p class="preco">R$ 15,00</p>
+                <button class="botao" onclick="adicionarAoCarrinho('Linha Harmony', 15.00)">Adicionar ao Carrinho</button>
+                <button class="botao" onclick="mostrarEndereco('Linha Harmony')">Comprar</button>
+            </div>
+            <div class="product">
+                <img src="https://raw.githubusercontent.com/StudyTask-ai/Produtos/refs/heads/main/Linha%20Princesa%2014%2C99%20Promo%C3%A7%C3%A3o%20Imperdivel.jpg" alt="Linha Princesa">
+                <h2>Linha Princesa</h2>
+                <span class="descricao-link" onclick="mostrarDescricao('desc5')">Ver Descrição</span>
+                <p id="desc5" style="display:none;">Linha Princesa é resistente e de alta qualidade, com uma promoção imperdível.</p>
+                <p class="preco">R$ 14,99</p>
+                <button class="botao" onclick="adicionarAoCarrinho('Linha Princesa', 14.99)">Adicionar ao Carrinho</button>
+                <button class="botao" onclick="mostrarEndereco('Linha Princesa')">Comprar</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="modalEndereco" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalEndereco()">&times;</span>
+            <h2>Digite seu Endereço</h2>
+            <div class="form-group">
+                <label for="endereco">Endereço</label>
+                <input type="text" id="endereco" placeholder="Rua, Número, Bairro, Cidade">
+            </div>
+            <button class="botao-pagamento" onclick="calcularFrete()">Calcular Frete</button>
+        </div>
+    </div>
+
+    <div id="modalPagamento" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalPagamento()">&times;</span>
+            <h2>Pagamento</h2>
+            <div class="form-group">
+                <label for="cartao">Número do Cartão</label>
+                <input type="text" id="cartao" placeholder="0000 0000 0000 0000">
+            </div>
+            <div class="form-group">
+                <label for="validade">Validade</label>
+                <input type="text" id="validade" placeholder="MM/AA">
+            </div>
+            <div class="form-group">
+                <label for="codigo">Código de Segurança</label>
+                <input type="text" id="codigo" placeholder="123">
+            </div>
+            <button class="botao-pagamento" onclick="finalizarCompra()">Finalizar Compra</button>
+            <button class="botao-pagamento" onclick="mostrarPix()">Pagar com Pix</button>
+        </div>
+    </div>
+
+    <div id="modalPix" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalPix()">&times;</span>
+            <h2>Pagamento com Pix</h2>
+            <p>Escaneie o QR Code abaixo para pagar com Pix.</p>
+            <img src="https://via.placeholder.com/150" alt="QR Code">
+        </div>
+    </div>
+
+    <div id="modalCarrinho" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalCarrinho()">&times;</span>
+            <h2>Seu Carrinho</h2>
+            <ul id="listaCarrinho"></ul>
+            <p id="totalCarrinho"></p>
+            <button class="botao" onclick="mostrarModalDesconto()">Aplicar Cupom</button>
+        </div>
+    </div>
+
+    <div id="modalFrete" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalFrete()">&times;</span>
+            <h2>Frete Grátis</h2>
+            <p>Frete grátis para sua região!</p>
+            <button class="botao" onclick="fecharModalFrete()">OK</button>
+        </div>
+    </div>
+
+    <div id="modalCompraFinalizada" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalCompraFinalizada()">&times;</span>
+            <h2>Compra Finalizada</h2>
+            <p>Compra finalizada com sucesso!</p>
+            <button class="botao" onclick="fecharModalCompraFinalizada()">OK</button>
+        </div>
+    </div>
+
+    <!-- Modal de Resposta de Adição ao Carrinho -->
+    <div id="modalAdicionado" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalAdicionado()">&times;</span>
+            <h2>Produto Adicionado</h2>
+            <p>Você adicionou ao carrinho com sucesso!</p>
+            <button class="botao" onclick="fecharModalAdicionado()">OK</button>
+        </div>
+    </div>
+
+    <!-- Modal para Cupom de Desconto -->
+    <div id="modalDesconto" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalDesconto()">&times;</span>
+            <h2>Quer um Desconto?</h2>
+            <p>Digite o CPF para aplicar o cupom de desconto.</p>
+            <input type="text" id="inputCupom" placeholder="Insira o CPF">
+            <button class="botao" onclick="aplicarDesconto()">Aplicar</button>
+        </div>
+    </div>
+
+    <footer>
+        <!-- Insira conteúdo de rodapé aqui -->
+    </footer>
+
+    <script>
+        // Função para alternar o tema e salvar no localStorage
+        function toggleTheme() {
+            const isDarkMode = document.body.style.backgroundColor === 'rgb(0, 0, 0)';
+            const newBgColor = isDarkMode ? '#f4f4f9' : 'rgb(0, 0, 0)';
+            const newProductBgColor = isDarkMode ? '#ffffff' : 'rgb(0, 0, 0)';
+
+            // Altera as cores de fundo
+            document.body.style.backgroundColor = newBgColor;
+            const products = document.querySelectorAll('.product');
+            products.forEach(product => {
+                product.style.backgroundColor = newProductBgColor;
+            });
+
+            // Salva o estado no localStorage
+            localStorage.setItem('theme', newBgColor);
+        }
+
+        // Função para aplicar o tema salvo ao carregar a página
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.style.backgroundColor = savedTheme;
+                const products = document.querySelectorAll('.product');
+                products.forEach(product => {
+                    product.style.backgroundColor = savedTheme === 'rgb(0, 0, 0)' ? 'rgb(0, 0, 0)' : '#ffffff';
+                });
+            }
+        }
+
+        // Chama a função ao carregar a página
+        window.onload = applySavedTheme;
+
+        function mostrarDescricao(id) {
+            var desc = document.getElementById(id);
+            desc.style.display = desc.style.display === "none" ? "block" : "none";
+        }
+
+        function adicionarAoCarrinho(produto, preco) {
+            let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+            carrinho.push({ nome: produto, preco: preco });
+            localStorage.setItem('carrinho', JSON.stringify(carrinho));
+            document.getElementById('modalAdicionado').style.display = 'flex'; // Mostra o modal de confirmação
+        }
+
+        function fecharModalAdicionado() {
+            document.getElementById('modalAdicionado').style.display = 'none';
+        }
+
+        function mostrarCarrinho() {
+            const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+            const listaCarrinho = document.getElementById('listaCarrinho');
+            const totalCarrinho = document.getElementById('totalCarrinho');
+            listaCarrinho.innerHTML = carrinho.map(item => `
+                <li>
+                    ${item.nome} - R$ ${item.preco.toFixed(2)}
+                </li>
+            `).join('');
+            const total = carrinho.reduce((sum, item) => sum + item.preco, 0);
+            totalCarrinho.textContent = `Total: R$ ${total.toFixed(2)}`;
+            document.getElementById('modalCarrinho').style.display = 'flex';
+        }
+
+        function fecharModalCarrinho() {
+            document.getElementById('modalCarrinho').style.display = 'none';
+        }
+
+        function mostrarEndereco(produto) {
+            document.getElementById('modalEndereco').style.display = 'flex';
+            sessionStorage.setItem('produtoSelecionado', produto);
+        }
+
+        function fecharModalEndereco() {
+            document.getElementById('modalEndereco').style.display = 'none';
+        }
+
+        function calcularFrete() {
+            fecharModalEndereco();
+            document.getElementById('modalFrete').style.display = 'flex';
+        }
+
+        function fecharModalFrete() {
+            document.getElementById('modalFrete').style.display = 'none';
+            mostrarPagamento();
+        }
+
+        function mostrarPagamento() {
+            document.getElementById('modalPagamento').style.display = 'flex';
+        }
+
+        function fecharModalPagamento() {
+            document.getElementById('modalPagamento').style.display = 'none';
+        }
+
+        function mostrarPix() {
+            fecharModalPagamento();
+            document.getElementById('modalPix').style.display = 'flex';
+        }
+
+        function fecharModalPix() {
+            document.getElementById('modalPix').style.display = 'none';
+        }
+
+        function finalizarCompra() {
+            fecharModalPagamento();
+            document.getElementById('modalCompraFinalizada').style.display = 'flex';
+        }
+
+        function fecharModalCompraFinalizada() {
+            document.getElementById('modalCompraFinalizada').style.display = 'none';
+        }
+
+        function mostrarModalDesconto() {
+            document.getElementById('modalDesconto').style.display = 'flex';
+        }
+
+        function fecharModalDesconto() {
+            document.getElementById('modalDesconto').style.display = 'none';
+        }
+
+        function aplicarDesconto() {
+            const cupom = document.getElementById('inputCupom').value;
+            const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+            const desconto = 0.10; // 10% de desconto
+            const totalAntesDesconto = carrinho.reduce((sum, item) => sum + item.preco, 0);
+            const totalComDesconto = totalAntesDesconto * (1 - desconto);
+            document.getElementById('totalCarrinho').textContent = `Total com Desconto: R$ ${totalComDesconto.toFixed(2)}`;
+            alert('Cupom aplicado com sucesso!');
+            fecharModalDesconto();
+        }
+
+        function nextSlide(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            const slideWidth = carousel.querySelector('.product').offsetWidth + 20; // Considera margem
+            carousel.scrollBy({ left: slideWidth, behavior: 'smooth' });
+        }
+
+        function prevSlide(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            const slideWidth = carousel.querySelector('.product').offsetWidth + 20; // Considera margem
+            carousel.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script>
+        gsap.from(".product", {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            ease: "power3.out"
+        });
+
+        gsap.to(".simulated-status-bar", {
+            backgroundPosition: "200% 0",
+            duration: 10,
+            ease: "linear",
+            repeat: -1
+        });
+    </script>
+</body>
+</html>
