@@ -519,4 +519,55 @@
                         <li>Produto sendo enviado...</li>
                         <li>Produto entregue!</li>
                     </ul>
-         
+                </div>
+            `;
+            document.body.appendChild(modalRastreamento);
+
+            const etapas = modalRastreamento.querySelectorAll('li');
+            let etapaAtual = 0;
+
+            const interval = setInterval(() => {
+                if (etapaAtual < etapas.length) {
+                    etapas[etapaAtual].style.opacity = '1';
+                    etapaAtual++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 10000); // Simula uma hora para cada etapa
+        }
+
+        function fecharModalRastreamento() {
+            document.getElementById('modalRastreamento').style.display = 'none';
+        }
+
+        function nextSlide(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            const slideWidth = carousel.querySelector('.product').offsetWidth + 20;
+            carousel.scrollBy({ left: slideWidth, behavior: 'smooth' });
+        }
+
+        function prevSlide(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            const slideWidth = carousel.querySelector('.product').offsetWidth + 20;
+            carousel.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script>
+        gsap.from(".product", {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            ease: "power3.out"
+        });
+
+        gsap.to(".simulated-status-bar", {
+            backgroundPosition: "200% 0",
+            duration: 10,
+            ease: "linear",
+            repeat: -1
+        });
+    </script>
+</body>
+</html>
